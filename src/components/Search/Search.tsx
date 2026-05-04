@@ -1,22 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, type ContextType } from 'react';
+import SearchContext from '../../context/SearchContext';
 
-interface SearchProps {
-  onSearch?: () => void;
-}
+export class Search extends Component {
+  static contextType = SearchContext;
+  declare context: ContextType<typeof SearchContext>;
 
-interface SearchState {
-  defaultRequest: string;
-}
-
-export class Search extends Component<SearchProps, SearchState> {
-  constructor(props: SearchProps) {
-    super(props);
-    this.state = {
-      defaultRequest: localStorage.getItem('lastRequest') || '',
-    };
-  }
-
-  handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
@@ -24,6 +13,7 @@ export class Search extends Component<SearchProps, SearchState> {
 
     if (searchRequest) {
       localStorage.setItem('lastRequest', searchRequest.toString());
+      await this.context.findItems(searchRequest.toString());
     }
   };
 
