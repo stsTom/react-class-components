@@ -5,16 +5,18 @@ export class Search extends Component {
   static contextType = SearchContext;
   declare context: ContextType<typeof SearchContext>;
 
+  async componentDidMount() {
+    await this.context.findItems(localStorage.getItem('lastRequest') ?? '');
+  }
+
   handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const searchRequest = formData.get('search');
+    const searchRequest = formData.get('search')?.toString() ?? '';
 
-    if (searchRequest) {
-      localStorage.setItem('lastRequest', searchRequest.toString());
-      await this.context.findItems(searchRequest.toString());
-    }
+    localStorage.setItem('lastRequest', searchRequest);
+    await this.context.findItems(searchRequest);
   };
 
   render() {

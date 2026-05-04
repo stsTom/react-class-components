@@ -6,7 +6,7 @@ interface data {
 
 export async function fetchData(searchRequest: string) {
   const apiUrl = 'https://stapi.co/api';
-  const searchParams = new URLSearchParams({ title: searchRequest });
+  const searchParams = new URLSearchParams({ title: searchRequest ?? '' });
 
   const searchResults = await fetch(`${apiUrl}/v1/rest/movie/search`, {
     method: 'POST',
