@@ -13,10 +13,12 @@ export class Search extends Component {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const searchRequest = formData.get('search')?.toString() ?? '';
+    const searchRequest = formData.get('search')?.toString().trim() ?? '';
 
-    localStorage.setItem('lastRequest', searchRequest);
-    await this.context.findItems(searchRequest);
+    if (searchRequest !== localStorage.getItem('lastRequest')) {
+      localStorage.setItem('lastRequest', searchRequest);
+      await this.context.findItems(searchRequest);
+    }
   };
 
   render() {
