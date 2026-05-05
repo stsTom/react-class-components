@@ -21,6 +21,10 @@ export class Search extends Component {
     }
   };
 
+  simulateError = () => {
+    this.context.simulateError();
+  };
+
   render() {
     return (
       <form role="search" onSubmit={this.handleSubmit}>
@@ -31,6 +35,9 @@ export class Search extends Component {
           placeholder="Search"
         />
         <button type="submit">Search</button>
+        <button id="error-btn" className="outline" onClick={this.simulateError}>
+          Simulate a server-side Error
+        </button>
       </form>
     );
   }

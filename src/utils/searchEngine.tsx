@@ -15,22 +15,40 @@ export async function fetchData(searchRequest: string) {
   });
   const fullUrl = `${apiUrl}/v1/rest/movie/search?${paginationParams.toString()}`;
 
-  const searchResults = await fetch(fullUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: searchParams.toString(),
-  }).then((result) => result.json());
-
-  console.log(searchParams.toString());
-  const response: data[] = [];
-
-  for (const movie of searchResults.movies) {
-    response.push({
-      id: movie.uid,
-      title: movie.title,
-      details: movie.usReleaseDate,
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: searchParams.toString(),
     });
-  }
 
-  return response;
+    if (!response.ok) {
+      const errorBody = await response.json();
+      throw new Error(
+        errorBody.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const searchResults = await response.json();
+
+    const responseData: data[] = [];
+
+    for (const movie of searchResults.movies) {
+      responseData.push({
+        id: movie.uid,
+        title: movie.title,
+        details: movie.usReleaseDate,
+      });
+    }
+
+    return responseData;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+  }
+}
+
+export function simulateError() {
+  throw new Error('Test error');
 }
