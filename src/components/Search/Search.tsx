@@ -1,5 +1,6 @@
 import React, { Component, type ContextType } from 'react';
 import SearchContext from '../../context/SearchContext';
+import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 
 export class Search extends Component {
   static contextType = SearchContext;
@@ -36,8 +37,9 @@ export class Search extends Component {
         />
         <button type="submit">Search</button>
         <button id="error-btn" className="outline" onClick={this.simulateError}>
-          Simulate a server-side Error
+          Simulate Backend Error
         </button>
+        <ErrorTrigger />
       </form>
     );
   }
