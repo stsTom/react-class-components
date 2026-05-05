@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+button {
+  white-space: nowrap;
+}
+
+header {
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+#card-title {
+  display: block;
+}
