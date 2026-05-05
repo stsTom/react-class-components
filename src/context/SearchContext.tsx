@@ -11,11 +11,13 @@ interface item {
 interface SearchContextType {
   data: item[];
   findItems: (searchRequest: string) => Promise<void>;
+  isLoading: boolean;
 }
 
 const SearchContext = createContext<SearchContextType>({
   data: [],
   findItems: async () => {},
+  isLoading: true,
 });
 
 export class SearchProvider extends Component<PropsWithChildren> {
@@ -24,13 +26,15 @@ export class SearchProvider extends Component<PropsWithChildren> {
     this.findItems = this.findItems.bind(this);
   }
 
-  state: { data: item[] } = {
+  state: { data: item[]; isLoading: boolean } = {
     data: [],
+    isLoading: true,
   };
 
   async findItems(searchRequest: string) {
+    this.setState({ isLoading: true });
     const items = await fetchData(searchRequest);
-    this.setState((this.state.data = items));
+    this.setState({ data: items, isLoading: false });
   }
 
   getItems = () => {
@@ -44,6 +48,7 @@ export class SearchProvider extends Component<PropsWithChildren> {
         value={{
           data: this.getItems(),
           findItems: this.findItems,
+          isLoading: this.state.isLoading,
         }}
       >
         {this.props.children}

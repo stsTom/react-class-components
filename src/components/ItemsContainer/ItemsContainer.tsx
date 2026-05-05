@@ -7,14 +7,16 @@ export class ItemsContainer extends Component {
   declare context: ContextType<typeof SearchContext>;
 
   render() {
+    const isLoading = this.context.isLoading;
     const items = this.context.data;
 
     return (
-      <>
-        {items.map((item) => (
-          <ItemCard key={item.id} title={item.title} details={item.details} />
-        ))}
-      </>
+      <main aria-busy={isLoading}>
+        {!isLoading &&
+          items.map((item) => (
+            <ItemCard key={item.id} title={item.title} details={item.details} />
+          ))}
+      </main>
     );
   }
 }
