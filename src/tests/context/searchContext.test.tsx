@@ -1,9 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SearchProvider } from '../../context/SearchContext';
+import SearchContext from '../../context/SearchContext';
 import { Search } from '../../components/Search/Search';
 import * as searchEngine from '../../utils/searchEngine';
 import { ItemsContainer } from '../../components/ItemsContainer/ItemsContainer';
+import { type SearchContextType } from '../../context/SearchContext';
 
 const mockItems = [
   { id: '1', title: 'Star Trek', details: '1979-12-07' },
@@ -77,5 +79,76 @@ describe('SearchContext', () => {
     await waitFor(() => {
       expect(screen.getByText('Network Error')).toBeInTheDocument();
     });
+  });
+});
+
+describe('LocalStorage interactions', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+  });
+
+  it('calls findItems with lastRequest from localStorage on mount', async () => {
+    const findItems = vi.fn();
+    localStorage.setItem('lastRequest', 'Star Trek');
+
+    render(
+      <SearchContext.Provider
+        value={
+          { findItems, simulateError: vi.fn() } as unknown as SearchContextType
+        }
+      >
+        <Search />
+      </SearchContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(findItems).toHaveBeenCalledWith('Star Trek');
+    });
+  });
+
+  it('saves the search query to localStorage on submit', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <SearchContext.Provider
+        value={
+          {
+            findItems: vi.fn(),
+            simulateError: vi.fn(),
+          } as unknown as SearchContextType
+        }
+      >
+        <Search />
+      </SearchContext.Provider>
+    );
+
+    await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
+    await user.click(screen.getByRole('button', { name: /^search$/i }));
+
+    expect(localStorage.getItem('lastRequest')).toBe('Star Trek');
+  });
+
+  it('does not call findItems when query matches lastRequest in localStorage', async () => {
+    const findItems = vi.fn();
+    const user = userEvent.setup();
+    localStorage.setItem('lastRequest', 'Star Trek');
+
+    render(
+      <SearchContext.Provider
+        value={
+          { findItems, simulateError: vi.fn() } as unknown as SearchContextType
+        }
+      >
+        <Search />
+      </SearchContext.Provider>
+    );
+
+    await waitFor(() => expect(findItems).toHaveBeenCalledWith('Star Trek'));
+    findItems.mockClear();
+
+    await user.click(screen.getByRole('button', { name: /^search$/i }));
+
+    expect(findItems).not.toHaveBeenCalled();
   });
 });
