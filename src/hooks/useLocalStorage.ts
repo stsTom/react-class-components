@@ -1,15 +1,15 @@
 import { useCallback } from 'react';
 
 export function useLocalStorage() {
-  const getItem = useCallback(
+  const getLastRequest = useCallback(
     () => localStorage.getItem('lastRequest') ?? '',
     []
   );
 
-  const setItem = useCallback(
+  const setLastRequest = useCallback(
     (value: string) => localStorage.setItem('lastRequest', value),
     []
   );
 
-  return { getItem, setItem };
+  return { getLastRequest, setLastRequest };
 }

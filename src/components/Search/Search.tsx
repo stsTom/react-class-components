@@ -4,12 +4,14 @@ import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export function Search() {
+  const firstPage = 0;
+
   const { findItems, simulateError } = useContext(SearchContext);
-  const { getItem, setItem } = useLocalStorage();
+  const { getLastRequest, setLastRequest } = useLocalStorage();
 
   useEffect(() => {
-    findItems(getItem());
-  }, []);
+    findItems(getLastRequest(), firstPage);
+  }, [findItems, getLastRequest]);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,9 +19,9 @@ export function Search() {
     const formData = new FormData(e.currentTarget);
     const searchRequest = formData.get('search')?.toString().trim() ?? '';
 
-    if (searchRequest !== getItem()) {
-      setItem(searchRequest);
-      await findItems(searchRequest);
+    if (searchRequest !== getLastRequest()) {
+      setLastRequest(searchRequest);
+      await findItems(searchRequest, firstPage);
     }
   };
 
@@ -28,7 +30,7 @@ export function Search() {
       <input
         type="search"
         name="search"
-        defaultValue={getItem()}
+        defaultValue={getLastRequest()}
         placeholder="Search"
       />
       <button type="submit">Search</button>

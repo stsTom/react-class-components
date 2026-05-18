@@ -1,16 +1,23 @@
-interface data {
+interface MovieInfo {
   id: string;
   title: string;
   details: string;
 }
 
-export async function fetchData(searchRequest: string) {
+interface Data {
+  movies: MovieInfo[];
+  pagesCount: number;
+}
+
+export async function fetchData(searchRequest: string, pageNumber: number) {
+  console.log(pageNumber);
+
   const apiUrl = 'https://stapi.co/api';
   const searchParams = new URLSearchParams({
     title: searchRequest ?? '',
   });
   const paginationParams = new URLSearchParams({
-    pageNumber: '0',
+    pageNumber: pageNumber.toString(),
     pageSize: '7',
   });
   const fullUrl = `${apiUrl}/v1/rest/movie/search?${paginationParams.toString()}`;
@@ -31,15 +38,17 @@ export async function fetchData(searchRequest: string) {
 
     const searchResults = await response.json();
 
-    const responseData: data[] = [];
+    const responseData: Data = { movies: [], pagesCount: 0 };
 
     for (const movie of searchResults.movies) {
-      responseData.push({
+      responseData.movies.push({
         id: movie.uid,
         title: movie.title,
         details: movie.usReleaseDate,
       });
     }
+
+    responseData.pagesCount = searchResults.page.totalPages;
 
     return responseData;
   } catch (error) {

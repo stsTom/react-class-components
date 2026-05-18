@@ -39,7 +39,10 @@ describe('SearchContext', () => {
   });
 
   it('sets isLoading to false and populates data after findItems resolves', async () => {
-    vi.spyOn(searchEngine, 'fetchData').mockResolvedValue(mockItems);
+    vi.spyOn(searchEngine, 'fetchData').mockResolvedValue({
+      movies: mockItems,
+      pagesCount: 1,
+    });
     const user = userEvent.setup();
 
     render(

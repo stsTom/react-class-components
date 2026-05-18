@@ -5,6 +5,7 @@ import {
   useCallback,
 } from 'react';
 import { fetchData, simulateError } from '../utils/searchEngine';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface Item {
   id: string;
@@ -13,39 +14,57 @@ interface Item {
 }
 
 export interface SearchContextType {
-  data: Item[];
-  findItems: (searchRequest: string) => Promise<void>;
+  items: Item[];
+  pagesCount: number;
+  currentPage: number;
+  findItems: (searchRequest: string, searchPage: number) => Promise<void>;
+  goToPage: (page: number) => void;
   simulateError: () => void;
   isLoading: boolean;
   errorMessage: string | null;
 }
 
 const SearchContext = createContext<SearchContextType>({
-  data: [],
+  items: [],
+  pagesCount: 0,
+  currentPage: 0,
   findItems: async () => {},
+  goToPage: () => {},
   simulateError: () => {},
   isLoading: true,
   errorMessage: null,
 });
 
 export function SearchProvider({ children }: PropsWithChildren) {
-  const [data, setData] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [pagesCount, setPagesCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { getLastRequest } = useLocalStorage();
 
-  const findItems = useCallback(async (searchRequest: string) => {
-    setIsLoading(true);
+  const findItems = useCallback(
+    async (searchRequest: string, searchPage: number) => {
+      setIsLoading(true);
+      setCurrentPage(searchPage);
 
-    try {
-      const items = await fetchData(searchRequest);
-      setData(items ?? []);
-      setIsLoading(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
+      try {
+        const data = await fetchData(searchRequest, searchPage);
+        setItems(data?.movies ?? []);
+        setPagesCount(data?.pagesCount ?? 0);
+        setIsLoading(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
+
+  const goToPage = (newPage: number) => {
+    findItems(getLastRequest(), newPage);
+  };
 
   const handleSimulateError = useCallback(() => {
     try {
@@ -60,8 +79,11 @@ export function SearchProvider({ children }: PropsWithChildren) {
   return (
     <SearchContext.Provider
       value={{
-        data,
+        items,
+        pagesCount,
+        currentPage,
         findItems,
+        goToPage,
         simulateError: handleSimulateError,
         isLoading,
         errorMessage,
