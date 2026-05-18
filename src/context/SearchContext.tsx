@@ -8,7 +8,7 @@ interface item {
   details: string;
 }
 
-interface SearchContextType {
+export interface SearchContextType {
   data: item[];
   findItems: (searchRequest: string) => Promise<void>;
   simulateError: () => void;
