@@ -15,15 +15,16 @@ export function ItemsContainer() {
         ))}
 
       <div role="group">
-        {Array.from({ length: pagesCount }, (_, i: number) => (
-          <button
-            key={i}
-            onClick={() => goToPage(i)}
-            disabled={i === currentPage}
-          >
-            {i + 1}
-          </button>
-        ))}
+        {!errorMessage &&
+          Array.from({ length: pagesCount }, (_, i: number) => (
+            <button
+              key={i}
+              onClick={() => goToPage(i)}
+              disabled={i === currentPage}
+            >
+              {i + 1}
+            </button>
+          ))}
       </div>
 
       {errorMessage && <h3>{errorMessage}</h3>}

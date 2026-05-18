@@ -9,68 +9,122 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as SearchableRouteImport } from './routes/_searchable'
+import { Route as DefaultRouteImport } from './routes/_default'
+import { Route as SearchableIndexRouteImport } from './routes/_searchable.index'
+import { Route as DefaultAboutRouteImport } from './routes/_default/about'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const SearchableRoute = SearchableRouteImport.update({
+  id: '/_searchable',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const DefaultRoute = DefaultRouteImport.update({
+  id: '/_default',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchableIndexRoute = SearchableIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => SearchableRoute,
+} as any)
+const DefaultAboutRoute = DefaultAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => DefaultRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/': typeof SearchableIndexRoute
+  '/about': typeof DefaultAboutRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/': typeof SearchableIndexRoute
+  '/about': typeof DefaultAboutRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/_default': typeof DefaultRouteWithChildren
+  '/_searchable': typeof SearchableRouteWithChildren
+  '/_default/about': typeof DefaultAboutRoute
+  '/_searchable/': typeof SearchableIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/about'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  id:
+    | '__root__'
+    | '/_default'
+    | '/_searchable'
+    | '/_default/about'
+    | '/_searchable/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  DefaultRoute: typeof DefaultRouteWithChildren
+  SearchableRoute: typeof SearchableRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/_searchable': {
+      id: '/_searchable'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SearchableRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_default': {
+      id: '/_default'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DefaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_searchable/': {
+      id: '/_searchable/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof SearchableIndexRouteImport
+      parentRoute: typeof SearchableRoute
+    }
+    '/_default/about': {
+      id: '/_default/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof DefaultAboutRouteImport
+      parentRoute: typeof DefaultRoute
     }
   }
 }
 
+interface DefaultRouteChildren {
+  DefaultAboutRoute: typeof DefaultAboutRoute
+}
+
+const DefaultRouteChildren: DefaultRouteChildren = {
+  DefaultAboutRoute: DefaultAboutRoute,
+}
+
+const DefaultRouteWithChildren =
+  DefaultRoute._addFileChildren(DefaultRouteChildren)
+
+interface SearchableRouteChildren {
+  SearchableIndexRoute: typeof SearchableIndexRoute
+}
+
+const SearchableRouteChildren: SearchableRouteChildren = {
+  SearchableIndexRoute: SearchableIndexRoute,
+}
+
+const SearchableRouteWithChildren = SearchableRoute._addFileChildren(
+  SearchableRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  DefaultRoute: DefaultRouteWithChildren,
+  SearchableRoute: SearchableRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

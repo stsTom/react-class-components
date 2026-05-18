@@ -21,6 +21,10 @@ code {
   background: var(--code-bg);
 }
 
+.no-pico-search {
+  margin-bottom: 0px;
+}
+
 #card-title {
   display: block;
 }

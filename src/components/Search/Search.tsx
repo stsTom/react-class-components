@@ -26,7 +26,7 @@ export function Search() {
   };
 
   return (
-    <form role="search" onSubmit={handleSubmit}>
+    <form role="search" className="no-pico-search" onSubmit={handleSubmit}>
       <input
         type="search"
         name="search"
