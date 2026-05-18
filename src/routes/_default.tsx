@@ -11,7 +11,8 @@ function RouteComponent() {
   return (
     <main>
       <header>
-        <nav>
+        <nav className='default-nav'>
+          <ul></ul>
           <ul>
             <NavMenu />
           </ul>
