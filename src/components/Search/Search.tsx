@@ -1,46 +1,41 @@
-import React, { Component, type ContextType } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SearchContext from '../../context/SearchContext';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
-export class Search extends Component {
-  static contextType = SearchContext;
-  declare context: ContextType<typeof SearchContext>;
+export function Search() {
+  const { findItems, simulateError } = useContext(SearchContext);
+  const { getItem, setItem } = useLocalStorage();
 
-  async componentDidMount() {
-    await this.context.findItems(localStorage.getItem('lastRequest') ?? '');
-  }
+  useEffect(() => {
+    findItems(getItem());
+  }, []);
 
-  handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const searchRequest = formData.get('search')?.toString().trim() ?? '';
 
-    if (searchRequest !== localStorage.getItem('lastRequest')) {
-      localStorage.setItem('lastRequest', searchRequest);
-      await this.context.findItems(searchRequest);
+    if (searchRequest !== getItem()) {
+      setItem(searchRequest);
+      await findItems(searchRequest);
     }
   };
 
-  simulateError = () => {
-    this.context.simulateError();
-  };
-
-  render() {
-    return (
-      <form role="search" onSubmit={this.handleSubmit}>
-        <input
-          type="search"
-          name="search"
-          defaultValue={localStorage.getItem('lastRequest')!}
-          placeholder="Search"
-        />
-        <button type="submit">Search</button>
-        <button id="error-btn" className="outline" onClick={this.simulateError}>
-          Simulate Backend Error
-        </button>
-        <ErrorTrigger />
-      </form>
-    );
-  }
+  return (
+    <form role="search" onSubmit={handleSubmit}>
+      <input
+        type="search"
+        name="search"
+        defaultValue={getItem()}
+        placeholder="Search"
+      />
+      <button type="submit">Search</button>
+      <button id="error-btn" className="outline" onClick={simulateError}>
+        Simulate Backend Error
+      </button>
+      <ErrorTrigger />
+    </form>
+  );
 }
