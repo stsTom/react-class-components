@@ -1,17 +1,15 @@
-import { Component } from 'react';
+import { useState } from "react";
 
-export class ErrorTrigger extends Component {
-  state = { crash: false };
+export function ErrorTrigger(){
+  const [crash, setCrash] = useState(false)
 
-  render() {
-    if (this.state.crash) throw new Error('Test error triggered!');
-    return (
-      <button
-        className="outline secondary"
-        onClick={() => this.setState({ crash: true })}
-      >
-        Simulate Frontend Error
-      </button>
-    );
-  }
+  if (crash) throw new Error('Test error triggered!');
+  return (
+    <button
+      className="outline secondary"
+      onClick={() => setCrash(true)}
+    >
+      Simulate Frontend Error
+    </button>
+  );
 }
