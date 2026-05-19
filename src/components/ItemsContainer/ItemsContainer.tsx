@@ -11,7 +11,12 @@ export function ItemsContainer() {
       {!isLoading &&
         !errorMessage &&
         items.map((item) => (
-          <ItemCard key={item.id} title={item.title} details={item.details} />
+          <ItemCard
+            key={item.id}
+            movieId={item.id}
+            title={item.title}
+            details={item.details}
+          />
         ))}
 
       <div role="group">

@@ -9,10 +9,9 @@ interface Data {
   pagesCount: number;
 }
 
-export async function fetchData(searchRequest: string, pageNumber: number) {
-  console.log(pageNumber);
+const apiUrl = 'https://stapi.co/api';
 
-  const apiUrl = 'https://stapi.co/api';
+export async function fetchData(searchRequest: string, pageNumber: number) {
   const searchParams = new URLSearchParams({
     title: searchRequest ?? '',
   });
@@ -49,6 +48,36 @@ export async function fetchData(searchRequest: string, pageNumber: number) {
     }
 
     responseData.pagesCount = searchResults.page.totalPages;
+
+    return responseData;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+  }
+}
+
+export async function fetchItemData(itemId: string) {
+  const searchParams = new URLSearchParams({
+    uid: itemId,
+  });
+  const fullUrl = `${apiUrl}/v1/rest/movie?${searchParams.toString()}`;
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json();
+      throw new Error(
+        errorBody.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const searchResults = await response.json();
+    const responseData = searchResults;
 
     return responseData;
   } catch (error) {

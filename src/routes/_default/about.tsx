@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_default/about')({
 
 function AboutPage() {
   return (
-    <div className="container" style={{ padding: "2rem 0" }}>
+    <div className="container" style={{ padding: '2rem 0' }}>
       <hgroup>
         <h1>About This Application</h1>
         <p>Learn more about the project and its creator.</p>
@@ -20,7 +20,8 @@ function AboutPage() {
             <h3>The App</h3>
           </header>
           <p>
-            This application was built as part of an education program at a React course in RS School
+            This application was built as part of an education program at a
+            React course in RS School
           </p>
           <footer>
             <a href="https://rs.school/courses/reactjs">
@@ -34,12 +35,15 @@ function AboutPage() {
             <h3>The Author</h3>
           </header>
           <p>
-            Hello! I am a student at RS School, trying to improve my front-end skills
-            and build deeper understanding of web development and the world of IT in general.
-            Contact me and we will continue this journey together!
+            Hello! I am a student at RS School, trying to improve my front-end
+            skills and build deeper understanding of web development and the
+            world of IT in general. Contact me and we will continue this journey
+            together!
           </p>
           <footer>
-            <a href="https://discord.com/users/567354113365639189">My Discord</a>
+            <a href="https://discord.com/users/567354113365639189">
+              My Discord
+            </a>
           </footer>
         </article>
       </div>

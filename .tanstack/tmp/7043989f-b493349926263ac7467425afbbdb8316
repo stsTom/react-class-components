@@ -1,0 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
+
+import { ErrorBoundary } from '../utils/ErrorBoundary';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { SearchPage } from './searchPage';
+
+export const Route = createFileRoute('/_searchable/')({ component: MainPage });
+
+function MainPage() {
+  return (
+    <ErrorBoundary>
+      <SearchPage />
+    </ErrorBoundary>
+  );
+}

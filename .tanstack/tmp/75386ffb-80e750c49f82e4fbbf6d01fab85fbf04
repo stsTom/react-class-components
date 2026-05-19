@@ -1,0 +1,20 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { ItemsContainer } from '../components/ItemsContainer/ItemsContainer'
+import { ErrorTrigger } from '../components/TestErrorButton/TestErrorButton'
+
+export const Route = createFileRoute('/searchPage')({
+  component: SearchPage,
+})
+
+function SearchPage() {
+  return (
+    <>
+      <section>
+        <ItemsContainer />
+      </section>
+      <footer>
+        <ErrorTrigger />
+      </footer>
+    </>
+  )
+}
