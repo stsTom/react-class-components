@@ -39,7 +39,10 @@ describe('SearchContext', () => {
   });
 
   it('sets isLoading to false and populates data after findItems resolves', async () => {
-    vi.spyOn(searchEngine, 'fetchData').mockResolvedValue(mockItems);
+    vi.spyOn(searchEngine, 'fetchData').mockResolvedValue({
+      movies: mockItems,
+      pagesCount: 1,
+    });
     const user = userEvent.setup();
 
     render(
@@ -88,10 +91,10 @@ describe('LocalStorage interactions', () => {
     localStorage.clear();
   });
 
-  it('calls findItems with lastRequest from localStorage on mount', async () => {
+ it('calls findItems with lastRequest from localStorage on mount', async () => {
     const findItems = vi.fn();
     localStorage.setItem('lastRequest', 'Star Trek');
-
+ 
     render(
       <SearchContext.Provider
         value={
@@ -101,9 +104,9 @@ describe('LocalStorage interactions', () => {
         <Search />
       </SearchContext.Provider>
     );
-
+ 
     await waitFor(() => {
-      expect(findItems).toHaveBeenCalledWith('Star Trek');
+      expect(findItems).toHaveBeenCalledWith('Star Trek', 0);
     });
   });
 
@@ -129,11 +132,11 @@ describe('LocalStorage interactions', () => {
     expect(localStorage.getItem('lastRequest')).toBe('Star Trek');
   });
 
-  it('does not call findItems when query matches lastRequest in localStorage', async () => {
+ it('does not call findItems when query matches lastRequest in localStorage', async () => {
     const findItems = vi.fn();
     const user = userEvent.setup();
     localStorage.setItem('lastRequest', 'Star Trek');
-
+ 
     render(
       <SearchContext.Provider
         value={
@@ -143,12 +146,12 @@ describe('LocalStorage interactions', () => {
         <Search />
       </SearchContext.Provider>
     );
-
-    await waitFor(() => expect(findItems).toHaveBeenCalledWith('Star Trek'));
+ 
+    await waitFor(() => expect(findItems).toHaveBeenCalledWith('Star Trek', 0));
     findItems.mockClear();
-
+ 
     await user.click(screen.getByRole('button', { name: /^search$/i }));
-
+ 
     expect(findItems).not.toHaveBeenCalled();
   });
 });

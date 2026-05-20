@@ -1,0 +1,11 @@
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/searchPage/_index/$itemId')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  const { itemId } = Route.useParams()
+
+  return <div>Hello, {itemId}!</div>
+}

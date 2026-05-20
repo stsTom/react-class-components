@@ -1,80 +1,97 @@
-import { type PropsWithChildren } from 'react';
-import { Component, createContext } from 'react';
+import {
+  type PropsWithChildren,
+  createContext,
+  useState,
+  useCallback,
+} from 'react';
 import { fetchData, simulateError } from '../utils/searchEngine';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
-interface item {
+interface Item {
   id: string;
   title: string;
   details: string;
 }
 
-interface SearchContextType {
-  data: item[];
-  findItems: (searchRequest: string) => Promise<void>;
+export interface SearchContextType {
+  items: Item[];
+  pagesCount: number;
+  currentPage: number;
+  findItems: (searchRequest: string, searchPage: number) => Promise<void>;
+  goToPage: (page: number) => void;
   simulateError: () => void;
   isLoading: boolean;
   errorMessage: string | null;
 }
 
 const SearchContext = createContext<SearchContextType>({
-  data: [],
+  items: [],
+  pagesCount: 0,
+  currentPage: 0,
   findItems: async () => {},
+  goToPage: () => {},
   simulateError: () => {},
   isLoading: true,
   errorMessage: null,
 });
 
-export class SearchProvider extends Component<PropsWithChildren> {
-  constructor(props: PropsWithChildren) {
-    super(props);
-    this.findItems = this.findItems.bind(this);
-  }
+export function SearchProvider({ children }: PropsWithChildren) {
+  const [items, setItems] = useState<Item[]>([]);
+  const [pagesCount, setPagesCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { getLastRequest } = useLocalStorage();
 
-  state: { data: item[]; isLoading: boolean; errorMessage: string | null } = {
-    data: [],
-    isLoading: true,
-    errorMessage: null,
+  const findItems = useCallback(
+    async (searchRequest: string, searchPage: number) => {
+      setIsLoading(true);
+      setCurrentPage(searchPage);
+
+      try {
+        const data = await fetchData(searchRequest, searchPage);
+        setItems(data?.movies ?? []);
+        setPagesCount(data?.pagesCount ?? 0);
+        setIsLoading(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        }
+      }
+    },
+    []
+  );
+
+  const goToPage = (newPage: number) => {
+    findItems(getLastRequest(), newPage);
   };
 
-  async findItems(searchRequest: string) {
-    this.setState({ isLoading: true });
-
-    try {
-      const items = await fetchData(searchRequest);
-
-      this.setState({ data: items, isLoading: false });
-    } catch (error) {
-      if (error instanceof Error) {
-        this.setState({ errorMessage: error.message });
-      }
-    }
-  }
-
-  simulateError = () => {
+  const handleSimulateError = useCallback(() => {
     try {
       simulateError();
     } catch (error) {
       if (error instanceof Error) {
-        this.setState({ errorMessage: error.message });
+        setErrorMessage(error.message);
       }
     }
-  };
+  }, []);
 
-  render() {
-    return (
-      <SearchContext.Provider
-        value={{
-          findItems: this.findItems,
-          simulateError: this.simulateError,
-          data: this.state.data,
-          isLoading: this.state.isLoading,
-          errorMessage: this.state.errorMessage,
-        }}
-      >
-        {this.props.children}
-      </SearchContext.Provider>
-    );
-  }
+  return (
+    <SearchContext.Provider
+      value={{
+        items,
+        pagesCount,
+        currentPage,
+        findItems,
+        goToPage,
+        simulateError: handleSimulateError,
+        isLoading,
+        errorMessage,
+      }}
+    >
+      {children}
+    </SearchContext.Provider>
+  );
 }
 
 export default SearchContext;
