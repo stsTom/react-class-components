@@ -1,4 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
+import { useSelectionStore } from '../../store/useSelectionStore';
 
 interface CardProps {
   movieId: string;
@@ -8,6 +9,7 @@ interface CardProps {
 
 export function ItemCard({ movieId, title, details }: CardProps) {
   const navigate = useNavigate();
+  const manageSelection = useSelectionStore((s) => s.manageSelection);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -16,8 +18,23 @@ export function ItemCard({ movieId, title, details }: CardProps) {
 
   return (
     <article onClick={handleClick}>
-      <strong id="card-title">{title}</strong>
-      <small>{details}</small>
+      <nav>
+        <ul>
+          <li>
+            <input
+              type="checkbox"
+              onClick={(e) => {
+                e.stopPropagation();
+                manageSelection(movieId);
+              }}
+            />
+          </li>
+          <li>
+            <strong id="card-title">{title}</strong>
+            <small>{details}</small>
+          </li>
+        </ul>
+      </nav>
     </article>
   );
 }
