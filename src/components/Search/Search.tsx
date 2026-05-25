@@ -1,19 +1,20 @@
-import React, { useContext, useEffect } from 'react';
-import SearchContext from '../../context/SearchContext';
+import React, { useEffect } from 'react';
+import { useSearchStore } from '../../store';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export function Search() {
   const firstPage = 0;
 
-  const { findItems, simulateError } = useContext(SearchContext);
+  const findItems = useSearchStore((s) => s.findItems);
+  const simulateError = useSearchStore((s) => s.simulateError);
   const { getLastRequest, setLastRequest } = useLocalStorage();
 
   useEffect(() => {
     findItems(getLastRequest(), firstPage);
   }, [findItems, getLastRequest]);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);

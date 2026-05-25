@@ -1,22 +1,23 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createFileRoute } from '@tanstack/react-router';
-import DetailsContext from '../../../context/DetailsContext';
-import { useContext, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useDetailsStore } from '../../../store';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_searchable/_split/$itemId')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { fetchDetails, details, isLoading } = useContext(DetailsContext);
+  const fetchDetails = useDetailsStore((s) => s.fetchDetails);
+  const details = useDetailsStore((s) => s.details);
+  const isLoading = useDetailsStore((s) => s.isLoading);
 
   const { itemId } = Route.useParams();
 
   useEffect(() => {
     fetchDetails(itemId);
-  }, [itemId]);
+  }, [itemId, fetchDetails]);
 
   if (!details) {
     return <p>Oh no! There's no data on this movie...</p>;
