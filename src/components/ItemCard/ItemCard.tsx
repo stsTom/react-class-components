@@ -10,7 +10,7 @@ interface CardProps {
 export function ItemCard({ movieId, title, details }: CardProps) {
   const navigate = useNavigate();
   const manageSelection = useSelectionStore((s) => s.manageSelection);
-  const isChecked = useSelectionStore((s) => s.selectedItems).includes(movieId)
+  const isChecked = useSelectionStore((s) => s.selectedItems).includes(movieId);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
