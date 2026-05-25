@@ -62,9 +62,9 @@ describe('fetchItemData', () => {
       ok: true,
       json: vi.fn().mockResolvedValue({}),
     } as unknown as Response);
- 
+
     await fetchItemData('abc123');
- 
+
     expect(fetchSpy).toHaveBeenCalledWith(
       'https://stapi.co/api/v1/rest/movie?uid=abc123',
       {
