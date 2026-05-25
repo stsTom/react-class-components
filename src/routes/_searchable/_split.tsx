@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_searchable/_split')({
   component: MainPage,
 });
 
-function MainPage() {
+export function MainPage() {
   const navigate = useNavigate();
 
   return (

@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Search } from '../../../components/Search/Search';
-import SearchContext from '../../../context/SearchContext';
-import { type SearchContextType } from '../../../context/SearchContext';
+import { useSearchStore } from '../../../store';
 
 vi.mock('../../../hooks/useLocalStorage', () => ({
   useLocalStorage: () => ({
@@ -11,20 +10,25 @@ vi.mock('../../../hooks/useLocalStorage', () => ({
   }),
 }));
 
+afterEach(() => {
+  vi.restoreAllMocks();
+  useSearchStore.setState({
+    items: [],
+    pagesCount: 0,
+    currentPage: 0,
+    isLoading: true,
+    errorMessage: null,
+  });
+});
+
 describe('Search functionality', () => {
-  it('calls findItems from context when search request is submitted', async () => {
+  it('calls findItems from store when search request is submitted', async () => {
     const findItems = vi.fn();
     const user = userEvent.setup();
 
-    render(
-      <SearchContext.Provider
-        value={
-          { findItems, simulateError: vi.fn() } as unknown as SearchContextType
-        }
-      >
-        <Search />
-      </SearchContext.Provider>
-    );
+    useSearchStore.setState({ findItems });
+
+    render(<Search />);
 
     await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
     await user.click(screen.getByRole('button', { name: /^search$/i }));

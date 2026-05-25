@@ -3,35 +3,35 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { NavMenu } from '../../components/NavMenu/NavMenu';
 import { Search } from '../../components/Search/Search';
-import { SearchProvider } from '../../context/SearchContext';
 import { ErrorBoundary } from '../../utils/ErrorBoundary';
-import { DetailsProvider } from '../../context/DetailsContext';
+import { useSelectionStore } from '../../store/useSelectionStore';
+import { SelectionFlyout } from '../../components/SelectionFlyout/SelectionFlyout';
 
 export const Route = createFileRoute('/_searchable')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return (
-    <SearchProvider>
-      <DetailsProvider>
-        <ErrorBoundary>
-          <header>
-            <nav>
-              <ul>
-                <li>
-                  <Search />
-                </li>
-              </ul>
-              <ul>
-                <NavMenu />
-              </ul>
-            </nav>
-          </header>
+  const isSelected = useSelectionStore((s) => s.selectedItems).length > 0;
 
-          <Outlet />
-        </ErrorBoundary>
-      </DetailsProvider>
-    </SearchProvider>
+  return (
+    <ErrorBoundary>
+      <header>
+        <nav>
+          <ul>
+            <li>
+              <Search />
+            </li>
+          </ul>
+          <ul>
+            <NavMenu />
+          </ul>
+        </nav>
+      </header>
+
+      <Outlet />
+
+      <footer>{isSelected && <SelectionFlyout />}</footer>
+    </ErrorBoundary>
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { ThemeToggle } from '../ThemeSwitcher/ThemeSwitcher';
 
 export function NavMenu() {
   return (
@@ -8,6 +9,9 @@ export function NavMenu() {
       </li>
       <li>
         <Link to="/about">About</Link>
+      </li>
+      <li>
+        <ThemeToggle />
       </li>
     </>
   );

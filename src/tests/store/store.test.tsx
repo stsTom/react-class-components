@@ -1,18 +1,29 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SearchProvider } from '../../context/SearchContext';
-import SearchContext from '../../context/SearchContext';
 import { Search } from '../../components/Search/Search';
-import * as searchEngine from '../../utils/searchEngine';
 import { ItemsContainer } from '../../components/ItemsContainer/ItemsContainer';
-import { type SearchContextType } from '../../context/SearchContext';
+import * as searchEngine from '../../utils/searchEngine';
+import { useSearchStore } from '../../store';
 
 const mockItems = [
   { id: '1', title: 'Star Trek', details: '1979-12-07' },
   { id: '2', title: 'Star Trek II', details: '1982-06-04' },
 ];
 
-describe('SearchContext', () => {
+afterEach(() => {
+  vi.restoreAllMocks();
+  localStorage.clear();
+  // Reset store to initial state between tests to prevent state leaking
+  useSearchStore.setState({
+    items: [],
+    pagesCount: 0,
+    currentPage: 0,
+    isLoading: true,
+    errorMessage: null,
+  });
+});
+
+describe('useSearchStore', () => {
   it('sets isLoading to true while fetching data', async () => {
     vi.spyOn(searchEngine, 'fetchData').mockImplementation(
       () => new Promise(() => {})
@@ -21,10 +32,10 @@ describe('SearchContext', () => {
     const user = userEvent.setup();
 
     render(
-      <SearchProvider>
+      <>
         <Search />
         <ItemsContainer />
-      </SearchProvider>
+      </>
     );
 
     await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
@@ -33,23 +44,19 @@ describe('SearchContext', () => {
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true');
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-    localStorage.clear();
-  });
-
   it('sets isLoading to false and populates data after findItems resolves', async () => {
     vi.spyOn(searchEngine, 'fetchData').mockResolvedValue({
       movies: mockItems,
       pagesCount: 1,
     });
+
     const user = userEvent.setup();
 
     render(
-      <SearchProvider>
+      <>
         <Search />
         <ItemsContainer />
-      </SearchProvider>
+      </>
     );
 
     await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
@@ -67,13 +74,14 @@ describe('SearchContext', () => {
     vi.spyOn(searchEngine, 'fetchData').mockRejectedValue(
       new Error('Network Error')
     );
+
     const user = userEvent.setup();
 
     render(
-      <SearchProvider>
+      <>
         <Search />
         <ItemsContainer />
-      </SearchProvider>
+      </>
     );
 
     await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
@@ -86,25 +94,15 @@ describe('SearchContext', () => {
 });
 
 describe('LocalStorage interactions', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-    localStorage.clear();
-  });
-
- it('calls findItems with lastRequest from localStorage on mount', async () => {
+  it('calls findItems with lastRequest from localStorage on mount', async () => {
     const findItems = vi.fn();
     localStorage.setItem('lastRequest', 'Star Trek');
- 
-    render(
-      <SearchContext.Provider
-        value={
-          { findItems, simulateError: vi.fn() } as unknown as SearchContextType
-        }
-      >
-        <Search />
-      </SearchContext.Provider>
-    );
- 
+
+    // Inject a mock findItems directly into the store
+    useSearchStore.setState({ findItems });
+
+    render(<Search />);
+
     await waitFor(() => {
       expect(findItems).toHaveBeenCalledWith('Star Trek', 0);
     });
@@ -113,18 +111,9 @@ describe('LocalStorage interactions', () => {
   it('saves the search query to localStorage on submit', async () => {
     const user = userEvent.setup();
 
-    render(
-      <SearchContext.Provider
-        value={
-          {
-            findItems: vi.fn(),
-            simulateError: vi.fn(),
-          } as unknown as SearchContextType
-        }
-      >
-        <Search />
-      </SearchContext.Provider>
-    );
+    useSearchStore.setState({ findItems: vi.fn() });
+
+    render(<Search />);
 
     await user.type(screen.getByPlaceholderText('Search'), 'Star Trek');
     await user.click(screen.getByRole('button', { name: /^search$/i }));
@@ -132,26 +121,20 @@ describe('LocalStorage interactions', () => {
     expect(localStorage.getItem('lastRequest')).toBe('Star Trek');
   });
 
- it('does not call findItems when query matches lastRequest in localStorage', async () => {
+  it('does not call findItems when query matches lastRequest in localStorage', async () => {
     const findItems = vi.fn();
     const user = userEvent.setup();
     localStorage.setItem('lastRequest', 'Star Trek');
- 
-    render(
-      <SearchContext.Provider
-        value={
-          { findItems, simulateError: vi.fn() } as unknown as SearchContextType
-        }
-      >
-        <Search />
-      </SearchContext.Provider>
-    );
- 
+
+    useSearchStore.setState({ findItems });
+
+    render(<Search />);
+
     await waitFor(() => expect(findItems).toHaveBeenCalledWith('Star Trek', 0));
     findItems.mockClear();
- 
+
     await user.click(screen.getByRole('button', { name: /^search$/i }));
- 
+
     expect(findItems).not.toHaveBeenCalled();
   });
 });
