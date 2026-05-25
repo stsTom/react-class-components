@@ -3,6 +3,7 @@ import { useSelectionStore } from '../../store/useSelectionStore';
 export function SelectionFlyout() {
   const selectedItems = useSelectionStore((s) => s.selectedItems);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
+  const downloadSelection = useSelectionStore((s) => s.downloadSelection)
 
   return (
     <nav id="selection-flyout">
@@ -13,7 +14,7 @@ export function SelectionFlyout() {
       </ul>
       <ul>
         <li>
-          <button>Download all</button>
+          <button onClick={() => downloadSelection()}>Download all</button>
         </li>
         <li>
           <button onClick={() => clearSelection()}>Clear all</button>
