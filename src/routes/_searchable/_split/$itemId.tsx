@@ -9,18 +9,19 @@ export const Route = createFileRoute('/_searchable/_split/$itemId')({
 
 function RouteComponent() {
   const details = useDetailsStore((s) => s.details);
+  const errorMessage = useDetailsStore((s) => s.errorMessage);
 
   const { itemId } = Route.useParams();
 
   const { isFetching } = useMovieDetails({ movieId: itemId });
 
-  if (!isFetching && !details) {
+  if (!isFetching && !details && !errorMessage) {
     return <p>Oh no! There's no data on this movie...</p>;
   }
 
   return (
     <main aria-busy={isFetching}>
-      {!isFetching && details && (
+      {!isFetching && details && !errorMessage && (
         <article>
           <h2>Movie Details</h2>
           <p>
@@ -34,6 +35,12 @@ function RouteComponent() {
             <Link to="/">Close window</Link>
           </footer>
         </article>
+      )}
+
+      {!isFetching && errorMessage && (
+        <div role="alert">
+          <h3>{errorMessage}</h3>
+        </div>
       )}
     </main>
   );

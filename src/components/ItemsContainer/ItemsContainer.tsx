@@ -1,6 +1,6 @@
-import { useSearchStore, useMovieSearch } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ItemCard } from '../ItemCard/ItemCard';
+import { useMovieSearch, useSearchStore } from '../../store';
 
 export function ItemsContainer() {
   const items = useSearchStore((s) => s.items);
@@ -45,7 +45,11 @@ export function ItemsContainer() {
         </>
       )}
 
-      {errorMessage && <h3>{errorMessage}</h3>}
+      {errorMessage && (
+        <div role="alert">
+          <h3>{errorMessage}</h3>
+        </div>
+      )}
     </main>
   );
 }
