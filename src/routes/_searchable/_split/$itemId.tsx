@@ -1,31 +1,26 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useDetailsStore } from '../../../store';
-import { useEffect } from 'react';
+import { useDetailsStore, useMovieDetails } from '../../../store';
 
 export const Route = createFileRoute('/_searchable/_split/$itemId')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const fetchDetails = useDetailsStore((s) => s.fetchDetails);
   const details = useDetailsStore((s) => s.details);
-  const isLoading = useDetailsStore((s) => s.isLoading);
 
   const { itemId } = Route.useParams();
 
-  useEffect(() => {
-    fetchDetails(itemId);
-  }, [itemId, fetchDetails]);
+  const { isFetching } = useMovieDetails({ movieId: itemId });
 
-  if (!details) {
+  if (!isFetching && !details) {
     return <p>Oh no! There's no data on this movie...</p>;
   }
 
   return (
-    <main aria-busy={isLoading}>
-      {!isLoading && (
+    <main aria-busy={isFetching}>
+      {!isFetching && details && (
         <article>
           <h2>Movie Details</h2>
           <p>

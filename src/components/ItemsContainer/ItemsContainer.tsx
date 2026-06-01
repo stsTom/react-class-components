@@ -1,20 +1,26 @@
-import { useSearchStore } from '../../store';
+import { useSearchStore, useMovieSearch } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ItemCard } from '../ItemCard/ItemCard';
 
 export function ItemsContainer() {
-  const isLoading = useSearchStore((s) => s.isLoading);
   const items = useSearchStore((s) => s.items);
   const pagesCount = useSearchStore((s) => s.pagesCount);
   const errorMessage = useSearchStore((s) => s.errorMessage);
   const currentPage = useSearchStore((s) => s.currentPage);
-  const goToPage = useSearchStore((s) => s.goToPage);
+  const setPage = useSearchStore((s) => s.setPage);
 
   const { getLastRequest } = useLocalStorage();
+  const search = getLastRequest();
+
+  const { isFetching } = useMovieSearch({
+    search,
+    page: currentPage,
+    enabled: Boolean(search),
+  });
 
   return (
-    <main aria-busy={isLoading}>
-      {!isLoading && !errorMessage && (
+    <main aria-busy={isFetching}>
+      {!isFetching && !errorMessage && (
         <>
           {items.map((item) => (
             <ItemCard
@@ -26,16 +32,15 @@ export function ItemsContainer() {
           ))}
 
           <div role="group">
-            {!errorMessage &&
-              Array.from({ length: pagesCount }, (_, i: number) => (
-                <button
-                  key={i}
-                  onClick={() => goToPage(getLastRequest(), i)}
-                  disabled={i === currentPage}
-                >
-                  {i + 1}
-                </button>
-              ))}
+            {Array.from({ length: pagesCount }, (_, i: number) => (
+              <button
+                key={i}
+                onClick={() => setPage(i)}
+                disabled={i === currentPage}
+              >
+                {i + 1}
+              </button>
+            ))}
           </div>
         </>
       )}
