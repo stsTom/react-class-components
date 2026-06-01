@@ -1,57 +1,33 @@
 import { create } from 'zustand';
-import { fetchData, simulateError } from '../utils/searchEngine';
 import type { Item } from './types';
 
 export interface SearchSlice {
   items: Item[];
   pagesCount: number;
   currentPage: number;
-  isLoading: boolean;
   errorMessage: string | null;
-  findItems: (searchRequest: string, searchPage: number) => Promise<void>;
-  goToPage: (searchRequest: string, page: number) => void;
-  simulateError: () => void;
+  setResults: (items: Item[], pagesCount: number) => void;
+  setPage: (page: number) => void;
+  setError: (message: string) => void;
+  reset: () => void;
 }
 
 const initialState = {
   items: [] as Item[],
   pagesCount: 0,
   currentPage: 0,
-  isLoading: true,
-  errorMessage: null,
+  errorMessage: null as string | null,
 };
 
-export const useSearchStore = create<SearchSlice>((set, get) => ({
+export const useSearchStore = create<SearchSlice>((set) => ({
   ...initialState,
 
-  findItems: async (searchRequest: string, searchPage: number) => {
-    set({ isLoading: true, currentPage: searchPage });
+  setResults: (items, pagesCount) =>
+    set({ items, pagesCount, errorMessage: null }),
 
-    try {
-      const data = await fetchData(searchRequest, searchPage);
-      set({
-        items: data?.movies ?? [],
-        pagesCount: data?.pagesCount ?? 0,
-        isLoading: false,
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        set({ errorMessage: error.message });
-      }
-    }
-  },
+  setPage: (page) => set({ currentPage: page }),
 
-  goToPage: (searchRequest: string, newPage: number) => {
-    get().findItems(searchRequest, newPage);
-  },
+  setError: (message) => set({ errorMessage: message }),
 
-  simulateError: () => {
-    try {
-      simulateError();
-    } catch (error) {
-      if (error instanceof Error) {
-        set({ errorMessage: error.message });
-      }
-    }
-  },
+  reset: () => set(initialState),
 }));

@@ -1,28 +1,30 @@
-import React, { useEffect } from 'react';
-import { useSearchStore } from '../../store';
+import React, { useState } from 'react';
+import { useSearchStore, useMovieSearch } from '../../store';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export function Search() {
-  const firstPage = 0;
-
-  const findItems = useSearchStore((s) => s.findItems);
-  const simulateError = useSearchStore((s) => s.simulateError);
   const { getLastRequest, setLastRequest } = useLocalStorage();
+  const setPage = useSearchStore((s) => s.setPage);
 
-  useEffect(() => {
-    findItems(getLastRequest(), firstPage);
-  }, [findItems, getLastRequest]);
+  const [search, setSearch] = useState(getLastRequest);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  useMovieSearch({
+    search,
+    page: 0,
+    enabled: Boolean(search),
+  });
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const searchRequest = formData.get('search')?.toString().trim() ?? '';
 
-    if (searchRequest !== getLastRequest()) {
+    if (searchRequest !== search) {
       setLastRequest(searchRequest);
-      await findItems(searchRequest, firstPage);
+      setPage(0);
+      setSearch(searchRequest);
     }
   };
 
@@ -35,9 +37,6 @@ export function Search() {
         placeholder="Search"
       />
       <button type="submit">Search</button>
-      <button id="error-btn" className="outline" onClick={simulateError}>
-        Simulate Backend Error
-      </button>
       <ErrorTrigger />
     </form>
   );
