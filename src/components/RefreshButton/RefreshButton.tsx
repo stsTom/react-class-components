@@ -1,14 +1,14 @@
 import { queryClient, movieKeys } from '../../store';
 
-export function RefreshButton(){
+export function RefreshButton() {
   const handleRefresh = async () => {
-      await queryClient.invalidateQueries({
-        queryKey: movieKeys.all,
-      });
-    }
+    await queryClient.invalidateQueries({
+      queryKey: movieKeys.all,
+    });
+  };
 
   return (
-    <button onClick={handleRefresh} aria-label='Refresh'>
+    <button onClick={handleRefresh} aria-label="Refresh">
       Refresh
     </button>
   );
