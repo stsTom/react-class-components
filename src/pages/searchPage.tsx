@@ -3,7 +3,7 @@ import { ErrorTrigger } from '../components/TestErrorButton/TestErrorButton';
 
 export function SearchPage() {
   return (
-    <div>
+    <div id="searchPage">
       <ItemsContainer />
       <footer>
         <ErrorTrigger />
