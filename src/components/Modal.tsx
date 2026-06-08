@@ -1,12 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
 import { Portal } from './Portal';
 
 interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
+  children: ReactNode
 }
 
-export function Modal({ isOpen, closeModal }: ModalProps) {
+export function Modal({ isOpen, closeModal, children }: ModalProps) {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -29,10 +30,7 @@ export function Modal({ isOpen, closeModal }: ModalProps) {
       {isOpen && (
         <dialog ref={modalRef} onClick={handleClick} open>
           <article>
-            <header>
-              I'm your modal!
-              <button rel="prev" onClick={closeModal} />
-            </header>
+            {children}
           </article>
         </dialog>
       )}
