@@ -1,21 +1,18 @@
-import { useState, useCallback } from 'react'
-import { Modal } from './components/Modal'
 import { MainPage } from './pages/MainPage'
-import { ReactHookFormComponent } from './features/react_hook_form/ReactHookForm'
+import { FormsModal } from './features/forms_modal/FormsModal'
+import { useCallback, useState } from 'react'
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleModalToggle = useCallback(() => {
-    setIsModalOpen(prev => !prev)
+  const openModal = useCallback(() => {
+    setIsModalOpen(true)
   }, [])
 
   return (
     <>
-      <MainPage openModal={handleModalToggle}/>
-      <Modal isOpen={isModalOpen} closeModal={handleModalToggle}>
-        <ReactHookFormComponent />
-      </Modal>
+      <MainPage openModal={openModal} />
+      <FormsModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
     </>
   )
 }
