@@ -11,10 +11,12 @@
     "format:fix": "prettier --write ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@picocss/pico": "^2.1.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-hook-form": "^7.78.0"
+    "react-hook-form": "^7.78.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
