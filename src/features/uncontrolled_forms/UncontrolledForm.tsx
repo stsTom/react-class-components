@@ -1,8 +1,9 @@
 import { useRef, useState, type FormEvent } from 'react'
 import * as yup from 'yup'
 import { schema, type FormData } from '../../utils/FormValidationSchema'
-import { COUNTRIES } from '../../store/CountryList'
+import { CountryDatalist } from '../../components/CountryList'
 import { ErrorField } from '../../components/ErrorField'
+import { useFormsStore } from '../../store/useFormsStore'
 
 type ErrorFields = Partial<Record<keyof FormData, string>>
 
@@ -14,13 +15,12 @@ export function UncontrolledForm() {
   const confirmRef = useRef<HTMLInputElement>(null)
   const imageRef = useRef<HTMLInputElement>(null)
   const countryRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const [errors, setErrors] = useState<ErrorFields>({})
-  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setSuccess(false)
 
     const raw = {
       name: nameRef.current?.value ?? '',
@@ -35,18 +35,24 @@ export function UncontrolledForm() {
     try {
       const data = await schema.validate(raw, { abortEarly: false })
       setErrors({})
-      setSuccess(true)
-      console.log('Uncontrolled Form Data:', { ...data, image: data.image[0] })
-      alert(`Submitted!\nName: ${data.name}\nEmail: ${data.email}`)
+      useFormsStore.getState().addSubmission({
+        source: 'Uncontrolled Form',
+        name: data.name,
+        age: data.age,
+        email: data.email,
+        country: data.country,
+        imageName: data.image[0]?.name ?? '—',
+      })
+      formRef.current?.reset()
     } catch (err) {
       if (err instanceof yup.ValidationError) {
-        const ErrorFields: ErrorFields = {}
+        const errorFields: ErrorFields = {}
         err.inner.forEach((e) => {
-          if (e.path && !(e.path in ErrorFields)) {
-            ErrorFields[e.path as keyof FormData] = e.message
+          if (e.path && !(e.path in errorFields)) {
+            errorFields[e.path as keyof FormData] = e.message
           }
         })
-        setErrors(ErrorFields)
+        setErrors(errorFields)
       }
     }
   }
@@ -60,13 +66,7 @@ export function UncontrolledForm() {
         </small>
       </header>
 
-      {success && (
-        <p>
-          Form submitted successfully!
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} noValidate>
+      <form ref={formRef} onSubmit={handleSubmit} noValidate>
         <label htmlFor="uc-name">Name</label>
         <input
           id="uc-name"
@@ -134,9 +134,7 @@ export function UncontrolledForm() {
           aria-invalid={!!errors.country}
           placeholder="Start typing a country…"
         />
-        <datalist id="uc-country-list">
-          {COUNTRIES.map((c) => <option key={c} value={c} />)}
-        </datalist>
+        <CountryDatalist id="uc-country-list" />
         <ErrorField message={errors.country} />
 
         <button type="submit">Submit</button>

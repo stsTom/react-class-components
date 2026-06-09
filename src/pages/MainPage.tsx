@@ -1,3 +1,5 @@
+import { SubmissionList } from "../features/submissions_list/SubmissionsList"
+
 interface MainPageProps {
   openModal: () => void
 }
@@ -8,6 +10,9 @@ export function MainPage({ openModal } : MainPageProps){
       <header>
         <button onClick={openModal}>Modal</button>
       </header>
+      <section>
+        <SubmissionList />
+      </section>
     </main>
   )
 }

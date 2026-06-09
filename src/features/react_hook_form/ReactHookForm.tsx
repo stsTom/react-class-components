@@ -1,22 +1,31 @@
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schema, type FormData } from '../../utils/FormValidationSchema'
-import { COUNTRIES } from '../../store/CountryList'
+import { CountryDatalist } from '../../components/CountryList'
 import { ErrorField } from '../../components/ErrorField'
+import { useFormsStore } from '../../store/useFormsStore'
 
 export function ReactHookFormComponent() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    reset,
+    formState: { errors, isSubmitted, isValid },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
   })
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log('React Hook Form Data:', { ...data, image: data.image[0] })
-    alert(`Submitted!\nName: ${data.name}\nEmail: ${data.email}`)
+    useFormsStore.getState().addSubmission({
+      source: 'React Hook Form',
+      name: data.name,
+      age: data.age,
+      email: data.email,
+      country: data.country,
+      imageName: data.image[0]?.name ?? '—',
+    })
+    reset()
   }
 
   return (
@@ -24,7 +33,7 @@ export function ReactHookFormComponent() {
       <header>
         <strong>React Hook Form</strong>
         <small>
-          — live validation, submit disabled until valid
+          — validates on submit, submit disabled after failed attempt until fixed
         </small>
       </header>
 
@@ -96,12 +105,10 @@ export function ReactHookFormComponent() {
           placeholder="Start typing a country…"
           {...register('country')}
         />
-        <datalist id="rhf-country-list">
-          {COUNTRIES.map((c) => <option key={c} value={c} />)}
-        </datalist>
+        <CountryDatalist id="rhf-country-list" />
         <ErrorField message={errors.country?.message} />
 
-        <button type="submit" disabled={!isValid} aria-disabled={!isValid}>
+        <button type="submit" disabled={isSubmitted && !isValid} aria-disabled={isSubmitted && !isValid}>
           Submit
         </button>
       </form>

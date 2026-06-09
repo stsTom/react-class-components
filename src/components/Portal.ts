@@ -1,4 +1,4 @@
-import { useLayoutEffect, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { createPortalWrapper } from '../utils/PortalDomWrapper';
 import { createPortal } from 'react-dom';
 
@@ -8,26 +8,26 @@ interface PortalProps {
 }
 
 export function Portal({ children, wrapperId }: PortalProps) {
-  let dynamicallyCreated = false
+  const dynamicallyCreated = useRef(false);
+
   let portalDomWrapper = document.getElementById(wrapperId);
 
-  const wrapperElement = portalDomWrapper ?? (() => {
+  if (!portalDomWrapper) {
     portalDomWrapper = createPortalWrapper(wrapperId);
-    dynamicallyCreated = true;
-    return portalDomWrapper
-  })()
-  
+    dynamicallyCreated.current = true;
+  }
+
+  const wrapperElement = portalDomWrapper;
+
   useLayoutEffect(() => {
     return () => {
-      const parentElement = wrapperElement.parentNode;
-
-      if (dynamicallyCreated && parentElement) {
-        parentElement.removeChild(wrapperElement);
+      if (dynamicallyCreated.current && wrapperElement.parentNode) {
+        wrapperElement.parentNode.removeChild(wrapperElement);
       }
     };
   }, [wrapperId, wrapperElement]);
 
-  if (wrapperElement === null) return null;
+  if (!wrapperElement) return null;
 
   return createPortal(children, wrapperElement);
 }
