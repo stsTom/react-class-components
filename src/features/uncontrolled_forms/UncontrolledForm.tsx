@@ -3,11 +3,17 @@ import * as yup from 'yup'
 import { schema, type FormData } from '../../utils/FormValidationSchema'
 import { CountryDatalist } from '../../components/CountryList'
 import { ErrorField } from '../../components/ErrorField'
+import { PasswordStrengthBar } from '../../components/PasswordStrengthBar'
 import { useFormsStore } from '../../store/useFormsStore'
+import { fileToBase64 } from '../../utils/ToBase64'
 
 type ErrorFields = Partial<Record<keyof FormData, string>>
 
-export function UncontrolledForm() {
+interface UncontrolledFormProps {
+  closeModal: () => void
+}
+
+export function UncontrolledForm({ closeModal }: UncontrolledFormProps) {
   const nameRef = useRef<HTMLInputElement>(null)
   const ageRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
@@ -18,8 +24,11 @@ export function UncontrolledForm() {
   const formRef = useRef<HTMLFormElement>(null)
 
   const [errors, setErrors] = useState<ErrorFields>({})
+  const [passwordValue, setPasswordValue] = useState('')
 
-  const handleSubmit = async (e: FormEvent) => {
+  const countries = useFormsStore((s) => s.countries)
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const raw = {
@@ -34,6 +43,7 @@ export function UncontrolledForm() {
 
     try {
       const data = await schema.validate(raw, { abortEarly: false })
+      const imageBase64 = await fileToBase64(data.image[0])
       setErrors({})
       useFormsStore.getState().addSubmission({
         source: 'Uncontrolled Form',
@@ -42,8 +52,11 @@ export function UncontrolledForm() {
         email: data.email,
         country: data.country,
         imageName: data.image[0]?.name ?? '—',
+        imageBase64,
       })
+      setPasswordValue('')
       formRef.current?.reset()
+      closeModal()
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const errorFields: ErrorFields = {}
@@ -61,9 +74,7 @@ export function UncontrolledForm() {
     <article>
       <header>
         <strong>Uncontrolled Form</strong>
-        <small>
-          — validates on submit
-        </small>
+        <small>— validates on submit</small>
       </header>
 
       <form ref={formRef} onSubmit={handleSubmit} noValidate>
@@ -103,7 +114,9 @@ export function UncontrolledForm() {
           type="password"
           ref={passwordRef}
           aria-invalid={!!errors.password}
+          onChange={(e) => setPasswordValue(e.target.value)}
         />
+        <PasswordStrengthBar password={passwordValue} />
         <ErrorField message={errors.password} />
 
         <label htmlFor="uc-confirm">Confirm Password</label>
@@ -134,7 +147,7 @@ export function UncontrolledForm() {
           aria-invalid={!!errors.country}
           placeholder="Start typing a country…"
         />
-        <CountryDatalist id="uc-country-list" />
+        <CountryDatalist id="uc-country-list" countries={countries} />
         <ErrorField message={errors.country} />
 
         <button type="submit">Submit</button>

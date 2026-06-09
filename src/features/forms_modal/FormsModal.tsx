@@ -40,9 +40,9 @@ export function FormsModal({isModalOpen, setIsModalOpen}: FormsModalProps) {
       </label>
 
       {activeForm === 'uncontrolled' ? (
-        <UncontrolledForm />
+        <UncontrolledForm closeModal={closeModal}/>
       ) : (
-        <ReactHookFormComponent />
+        <ReactHookFormComponent closeModal={closeModal}/>
       )}
     </Modal>
   )

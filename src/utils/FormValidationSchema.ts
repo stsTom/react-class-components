@@ -1,6 +1,8 @@
 import * as yup from 'yup'
 import { COUNTRIES } from '../store/CountryList'
 
+const COUNTRIES_SET = new Set(COUNTRIES)
+
 function isValidEmail(value: string | undefined): boolean {
   if (!value) return false
   const atIndex = value.indexOf('@')
@@ -61,7 +63,7 @@ export const schema = yup.object({
     .string()
     .required('Country is required')
     .test('valid-country', 'Select a valid country from the list', (v) =>
-      !!v && (COUNTRIES as readonly string[]).includes(v),
+      !!v && COUNTRIES_SET.has(v as typeof COUNTRIES[number]),
     ),
 })
 

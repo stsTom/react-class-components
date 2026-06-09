@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Portal } from './Portal';
 
 interface ModalProps {

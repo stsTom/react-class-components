@@ -40,7 +40,12 @@ export function SubmissionList() {
                 <td>{s.email}</td>
                 <td>{s.country}</td>
                 <td>
-                  <small>{s.imageName}</small>
+                  {s.imageBase64 && (
+                    <img
+                      src={s.imageBase64}
+                      alt={`${s.name}'s profile`}
+                      style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '50%', flexShrink: 0 }}/>
+                  )}
                 </td>
                 <td>
                   <small>{s.submittedAt.toLocaleTimeString()}</small>
