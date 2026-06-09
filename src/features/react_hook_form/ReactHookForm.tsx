@@ -1,18 +1,20 @@
-import { useForm, useWatch, type SubmitHandler } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { schema, type FormData } from '../../utils/FormValidationSchema'
-import { CountryDatalist } from '../../components/CountryList'
-import { ErrorField } from '../../components/ErrorField'
-import { PasswordStrengthBar } from '../../components/PasswordStrengthBar'
-import { useFormsStore } from '../../store/useFormsStore'
-import { fileToBase64 } from '../../utils/ToBase64'
+import { useForm, useWatch, type SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { schema, type FormData } from '../../utils/FormValidationSchema';
+import { CountryDatalist } from '../../components/CountryList';
+import { ErrorField } from '../../components/ErrorField';
+import { PasswordStrengthBar } from '../../components/PasswordStrengthBar';
+import { useFormsStore } from '../../store/useFormsStore';
+import { fileToBase64 } from '../../utils/ToBase64';
 
 interface ReactHookFormComponentProps {
-  closeModal: () => void
+  closeModal: () => void;
 }
 
-export function ReactHookFormComponent({ closeModal }: ReactHookFormComponentProps) {
-  const countries = useFormsStore((s) => s.countries)
+export function ReactHookFormComponent({
+  closeModal,
+}: ReactHookFormComponentProps) {
+  const countries = useFormsStore((s) => s.countries);
 
   const {
     register,
@@ -23,12 +25,16 @@ export function ReactHookFormComponent({ closeModal }: ReactHookFormComponentPro
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
-  })
+  });
 
-  const passwordValue = useWatch({ control, name: 'password', defaultValue: '' })
+  const passwordValue = useWatch({
+    control,
+    name: 'password',
+    defaultValue: '',
+  });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const imageBase64 = await fileToBase64(data.image[0])
+    const imageBase64 = await fileToBase64(data.image[0]);
     useFormsStore.getState().addSubmission({
       source: 'React Hook Form',
       name: data.name,
@@ -37,16 +43,19 @@ export function ReactHookFormComponent({ closeModal }: ReactHookFormComponentPro
       country: data.country,
       imageName: data.image[0]?.name ?? '—',
       imageBase64,
-    })
-    reset()
-    closeModal()
-  }
+    });
+    reset();
+    closeModal();
+  };
 
   return (
     <article>
       <header>
         <strong>React Hook Form</strong>
-        <small>— validates on submit · submit disabled after failed attempt until fixed</small>
+        <small>
+          — validates on submit · submit disabled after failed attempt until
+          fixed
+        </small>
       </header>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -121,10 +130,14 @@ export function ReactHookFormComponent({ closeModal }: ReactHookFormComponentPro
         <CountryDatalist id="rhf-country-list" countries={countries} />
         <ErrorField message={errors.country?.message} />
 
-        <button type="submit" disabled={isSubmitted && !isValid} aria-disabled={isSubmitted && !isValid}>
+        <button
+          type="submit"
+          disabled={isSubmitted && !isValid}
+          aria-disabled={isSubmitted && !isValid}
+        >
           Submit
         </button>
       </form>
     </article>
-  )
+  );
 }

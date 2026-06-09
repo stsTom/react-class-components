@@ -4,7 +4,7 @@ import { Portal } from './Portal';
 interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function Modal({ isOpen, closeModal, children }: ModalProps) {
@@ -29,9 +29,7 @@ export function Modal({ isOpen, closeModal, children }: ModalProps) {
     <Portal wrapperId="modalPortal">
       {isOpen && (
         <dialog ref={modalRef} onClick={handleClick} open>
-          <article>
-            {children}
-          </article>
+          <article>{children}</article>
         </dialog>
       )}
     </Portal>

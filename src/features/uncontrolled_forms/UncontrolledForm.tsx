@@ -1,35 +1,35 @@
-import { useRef, useState, type FormEvent } from 'react'
-import * as yup from 'yup'
-import { schema, type FormData } from '../../utils/FormValidationSchema'
-import { CountryDatalist } from '../../components/CountryList'
-import { ErrorField } from '../../components/ErrorField'
-import { PasswordStrengthBar } from '../../components/PasswordStrengthBar'
-import { useFormsStore } from '../../store/useFormsStore'
-import { fileToBase64 } from '../../utils/ToBase64'
+import { useRef, useState, type FormEvent } from 'react';
+import * as yup from 'yup';
+import { schema, type FormData } from '../../utils/FormValidationSchema';
+import { CountryDatalist } from '../../components/CountryList';
+import { ErrorField } from '../../components/ErrorField';
+import { PasswordStrengthBar } from '../../components/PasswordStrengthBar';
+import { useFormsStore } from '../../store/useFormsStore';
+import { fileToBase64 } from '../../utils/ToBase64';
 
-type ErrorFields = Partial<Record<keyof FormData, string>>
+type ErrorFields = Partial<Record<keyof FormData, string>>;
 
 interface UncontrolledFormProps {
-  closeModal: () => void
+  closeModal: () => void;
 }
 
 export function UncontrolledForm({ closeModal }: UncontrolledFormProps) {
-  const nameRef = useRef<HTMLInputElement>(null)
-  const ageRef = useRef<HTMLInputElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
-  const confirmRef = useRef<HTMLInputElement>(null)
-  const imageRef = useRef<HTMLInputElement>(null)
-  const countryRef = useRef<HTMLInputElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
+  const nameRef = useRef<HTMLInputElement>(null);
+  const ageRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const [errors, setErrors] = useState<ErrorFields>({})
-  const [passwordValue, setPasswordValue] = useState('')
+  const [errors, setErrors] = useState<ErrorFields>({});
+  const [passwordValue, setPasswordValue] = useState('');
 
-  const countries = useFormsStore((s) => s.countries)
+  const countries = useFormsStore((s) => s.countries);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const raw = {
       name: nameRef.current?.value ?? '',
@@ -39,12 +39,12 @@ export function UncontrolledForm({ closeModal }: UncontrolledFormProps) {
       confirmPassword: confirmRef.current?.value ?? '',
       image: imageRef.current?.files ?? undefined,
       country: countryRef.current?.value ?? '',
-    }
+    };
 
     try {
-      const data = await schema.validate(raw, { abortEarly: false })
-      const imageBase64 = await fileToBase64(data.image[0])
-      setErrors({})
+      const data = await schema.validate(raw, { abortEarly: false });
+      const imageBase64 = await fileToBase64(data.image[0]);
+      setErrors({});
       useFormsStore.getState().addSubmission({
         source: 'Uncontrolled Form',
         name: data.name,
@@ -53,22 +53,22 @@ export function UncontrolledForm({ closeModal }: UncontrolledFormProps) {
         country: data.country,
         imageName: data.image[0]?.name ?? '—',
         imageBase64,
-      })
-      setPasswordValue('')
-      formRef.current?.reset()
-      closeModal()
+      });
+      setPasswordValue('');
+      formRef.current?.reset();
+      closeModal();
     } catch (err) {
       if (err instanceof yup.ValidationError) {
-        const errorFields: ErrorFields = {}
+        const errorFields: ErrorFields = {};
         err.inner.forEach((e) => {
           if (e.path && !(e.path in errorFields)) {
-            errorFields[e.path as keyof FormData] = e.message
+            errorFields[e.path as keyof FormData] = e.message;
           }
-        })
-        setErrors(errorFields)
+        });
+        setErrors(errorFields);
       }
     }
-  }
+  };
 
   return (
     <article>
@@ -153,5 +153,5 @@ export function UncontrolledForm({ closeModal }: UncontrolledFormProps) {
         <button type="submit">Submit</button>
       </form>
     </article>
-  )
+  );
 }

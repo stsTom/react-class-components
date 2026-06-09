@@ -1,15 +1,17 @@
-import * as yup from 'yup'
-import { COUNTRIES } from '../store/CountryList'
+import * as yup from 'yup';
+import { COUNTRIES } from '../store/CountryList';
 
-const COUNTRIES_SET = new Set(COUNTRIES)
+const COUNTRIES_SET = new Set(COUNTRIES);
 
 function isValidEmail(value: string | undefined): boolean {
-  if (!value) return false
-  const atIndex = value.indexOf('@')
-  if (atIndex <= 0) return false
-  if (value.indexOf('@', atIndex + 1) !== -1) return false
-  const domain = value.slice(atIndex + 1)
-  return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.')
+  if (!value) return false;
+  const atIndex = value.indexOf('@');
+  if (atIndex <= 0) return false;
+  if (value.indexOf('@', atIndex + 1) !== -1) return false;
+  const domain = value.slice(atIndex + 1);
+  return (
+    domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.')
+  );
 }
 
 export const schema = yup.object({
@@ -22,7 +24,7 @@ export const schema = yup.object({
       (value) =>
         !!value &&
         value[0] === value[0].toUpperCase() &&
-        value[0] !== value[0].toLowerCase(),
+        value[0] !== value[0].toLowerCase()
     ),
 
   age: yup
@@ -34,7 +36,11 @@ export const schema = yup.object({
   email: yup
     .string()
     .required('Email is required')
-    .test('valid-email', 'Enter a valid email (e.g. user@example.com)', isValidEmail),
+    .test(
+      'valid-email',
+      'Enter a valid email (e.g. user@example.com)',
+      isValidEmail
+    ),
 
   password: yup
     .string()
@@ -49,22 +55,28 @@ export const schema = yup.object({
   image: yup
     .mixed<FileList>()
     .required('Image is required')
-    .test('file-present', 'Image is required', (v) => v instanceof FileList && v.length > 0)
+    .test(
+      'file-present',
+      'Image is required',
+      (v) => v instanceof FileList && v.length > 0
+    )
     .test('file-size', 'File must be smaller than 5 MB', (v) => {
-      if (!(v instanceof FileList) || v.length === 0) return true
-      return v[0].size <= 5 * 1024 * 1024
+      if (!(v instanceof FileList) || v.length === 0) return true;
+      return v[0].size <= 5 * 1024 * 1024;
     })
     .test('file-type', 'Only PNG and JPEG files are allowed', (v) => {
-      if (!(v instanceof FileList) || v.length === 0) return true
-      return ['image/png', 'image/jpeg', 'image/jpg'].includes(v[0].type)
+      if (!(v instanceof FileList) || v.length === 0) return true;
+      return ['image/png', 'image/jpeg', 'image/jpg'].includes(v[0].type);
     }),
 
   country: yup
     .string()
     .required('Country is required')
-    .test('valid-country', 'Select a valid country from the list', (v) =>
-      !!v && COUNTRIES_SET.has(v as typeof COUNTRIES[number]),
+    .test(
+      'valid-country',
+      'Select a valid country from the list',
+      (v) => !!v && COUNTRIES_SET.has(v as (typeof COUNTRIES)[number])
     ),
-})
+});
 
-export type FormData = yup.InferType<typeof schema>
+export type FormData = yup.InferType<typeof schema>;

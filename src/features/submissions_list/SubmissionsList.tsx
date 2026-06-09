@@ -1,15 +1,17 @@
-import { useFormsStore } from '../../store/useFormsStore'
+import { useFormsStore } from '../../store/useFormsStore';
 
 export function SubmissionList() {
-  const submissions = useFormsStore((s) => s.submissions)
+  const submissions = useFormsStore((s) => s.submissions);
 
-  if (submissions.length === 0) return null
+  if (submissions.length === 0) return null;
 
   return (
     <article>
       <header>
         <strong>Submissions</strong>
-        <small style={{ marginLeft: '0.5rem', fontWeight: 'normal', opacity: 0.7 }}>
+        <small
+          style={{ marginLeft: '0.5rem', fontWeight: 'normal', opacity: 0.7 }}
+        >
           — {submissions.length} total
         </small>
       </header>
@@ -30,7 +32,13 @@ export function SubmissionList() {
           </thead>
           <tbody>
             {submissions.map((s, i) => (
-              <tr key={s.id}>
+              <tr
+                key={s.id}
+                style={{
+                  borderLeft:
+                    i === 0 ? '3px solid var(--pico-primary)' : undefined,
+                }}
+              >
                 <td>{submissions.length - i}</td>
                 <td>
                   <small>{s.source}</small>
@@ -44,7 +52,14 @@ export function SubmissionList() {
                     <img
                       src={s.imageBase64}
                       alt={`${s.name}'s profile`}
-                      style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '50%', flexShrink: 0 }}/>
+                      style={{
+                        width: '64px',
+                        height: '64px',
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                        flexShrink: 0,
+                      }}
+                    />
                   )}
                 </td>
                 <td>
@@ -56,5 +71,5 @@ export function SubmissionList() {
         </table>
       </figure>
     </article>
-  )
+  );
 }
