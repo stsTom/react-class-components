@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: ['./src/setupTests.ts'],
     globals: true,
     coverage: {
+      include: ['src/**/*.{ts,tsx}'],
       provider: 'v8',
       reporter: ['text'],
       thresholds: {
