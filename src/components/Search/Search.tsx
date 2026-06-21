@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchStore, useMovieSearch } from '../../store';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
@@ -7,7 +7,13 @@ export function Search() {
   const { getLastRequest, setLastRequest } = useLocalStorage();
   const setPage = useSearchStore((s) => s.setPage);
 
-  const [search, setSearch] = useState(getLastRequest);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    // Read localStorage only after mount to keep SSR and client render consistent.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearch(getLastRequest());
+  }, [getLastRequest]);
 
   useMovieSearch({
     search,
@@ -15,7 +21,7 @@ export function Search() {
     enabled: Boolean(search),
   });
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
@@ -33,7 +39,8 @@ export function Search() {
       <input
         type="search"
         name="search"
-        defaultValue={getLastRequest()}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
         placeholder="Search"
       />
       <button type="submit">Search</button>

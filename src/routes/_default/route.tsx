@@ -1,25 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
+/* legacy default route (migrated to Next App Router) */
 
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { NavMenu } from '../../components/NavMenu/NavMenu';
-
-export const Route = createFileRoute('/_default')({
-  component: RouteComponent,
-});
-
-function RouteComponent() {
-  return (
-    <main>
-      <header>
-        <nav className="default-nav">
-          <ul></ul>
-          <ul>
-            <NavMenu />
-          </ul>
-        </nav>
-      </header>
-
-      <Outlet />
-    </main>
-  );
-}
+export default null;

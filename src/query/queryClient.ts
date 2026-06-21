@@ -6,7 +6,7 @@ export const queryClient = new QueryClient({
     queries: {
       staleTime: queryConfig.staleTime,
       gcTime: queryConfig.gcTime,
-      refetchOnWindowFocus: import.meta.env.PROD,
+      refetchOnWindowFocus: process.env.NODE_ENV === 'production',
       retry: 1,
     },
   },

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ItemCard } from '../ItemCard/ItemCard';
 import { useMovieSearch, useSearchStore } from '../../store';
@@ -10,7 +13,13 @@ export function ItemsContainer() {
   const setPage = useSearchStore((s) => s.setPage);
 
   const { getLastRequest } = useLocalStorage();
-  const search = getLastRequest();
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    // Read localStorage only after mount to keep SSR and client render consistent.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearch(getLastRequest());
+  }, [getLastRequest]);
 
   const { isFetching } = useMovieSearch({
     search,

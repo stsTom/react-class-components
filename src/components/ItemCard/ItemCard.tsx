@@ -1,4 +1,6 @@
-import { useNavigate } from '@tanstack/react-router';
+"use client";
+
+import { useRouter } from 'next/navigation';
 import { useSelectionStore } from '../../store/useSelectionStore';
 
 interface CardProps {
@@ -8,13 +10,13 @@ interface CardProps {
 }
 
 export function ItemCard({ movieId, title, details }: CardProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const manageSelection = useSelectionStore((s) => s.manageSelection);
   const isChecked = useSelectionStore((s) => s.selectedItems).includes(movieId);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: `/${movieId}` });
+    router.push(`/_searchable/_split/${movieId}`);
   };
 
   return (
@@ -26,6 +28,9 @@ export function ItemCard({ movieId, title, details }: CardProps) {
               type="checkbox"
               checked={isChecked}
               onClick={(e) => {
+                e.stopPropagation();
+              }}
+              onChange={(e) => {
                 e.stopPropagation();
                 manageSelection(movieId);
               }}

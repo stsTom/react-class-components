@@ -8,54 +8,9 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as NotFoundRouteImport } from './routes/NotFound'
-import { Route as SearchableRouteRouteImport } from './routes/_searchable/route'
-import { Route as DefaultRouteRouteImport } from './routes/_default/route'
-import { Route as SearchableSplitRouteImport } from './routes/_searchable/_split'
-import { Route as DefaultAboutRouteImport } from './routes/_default/about'
-import { Route as SearchableSplitIndexRouteImport } from './routes/_searchable/_split/index'
-import { Route as SearchableSplitItemIdRouteImport } from './routes/_searchable/_split/$itemId'
+/* route tree removed - migrated to Next App Router */
 
-const NotFoundRoute = NotFoundRouteImport.update({
-  id: '/NotFound',
-  path: '/NotFound',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchableRouteRoute = SearchableRouteRouteImport.update({
-  id: '/_searchable',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DefaultRouteRoute = DefaultRouteRouteImport.update({
-  id: '/_default',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchableSplitRoute = SearchableSplitRouteImport.update({
-  id: '/_split',
-  getParentRoute: () => SearchableRouteRoute,
-} as any)
-const DefaultAboutRoute = DefaultAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => DefaultRouteRoute,
-} as any)
-const SearchableSplitIndexRoute = SearchableSplitIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SearchableSplitRoute,
-} as any)
-const SearchableSplitItemIdRoute = SearchableSplitItemIdRouteImport.update({
-  id: '/$itemId',
-  path: '/$itemId',
-  getParentRoute: () => SearchableSplitRoute,
-} as any)
-
-export interface FileRoutesByFullPath {
-  '/': typeof SearchableSplitIndexRoute
-  '/NotFound': typeof NotFoundRoute
-  '/about': typeof DefaultAboutRoute
-  '/$itemId': typeof SearchableSplitItemIdRoute
-}
+export default null;
 export interface FileRoutesByTo {
   '/': typeof SearchableSplitIndexRoute
   '/NotFound': typeof NotFoundRoute

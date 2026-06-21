@@ -1,25 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
-import { SearchPage } from '../../pages/searchPage';
+"use client";
 
-export const Route = createFileRoute('/_searchable/_split')({
-  component: MainPage,
-});
+import { useRouter } from 'next/navigation';
+import { SearchPage } from '../../a-pages/searchPage';
+import { PropsWithChildren } from 'react';
 
-export function MainPage() {
-  const navigate = useNavigate();
+export function MainPage({ children }: PropsWithChildren) {
+  const router = useRouter();
 
   return (
     <div className="grid">
       <div
         onClick={() => {
-          navigate({ to: '/' });
+          router.push('/');
         }}
       >
         <SearchPage />
       </div>
-      <Outlet />
+      {children}
     </div>
   );
 }

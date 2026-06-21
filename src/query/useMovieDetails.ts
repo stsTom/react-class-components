@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { notFound } from '@tanstack/react-router';
+// removed dependency on router's notFound sentinel
 import { fetchItemData } from '../utils/searchEngine';
 import { useDetailsStore } from '../store/useDetailsStore';
 import { movieKeys } from './queryKeys';
@@ -22,7 +22,7 @@ export function useMovieDetails({
     queryKey: movieKeys.details(movieId),
     queryFn: async () => {
       const data = await fetchItemData(movieId);
-      if (!data) return notFound;
+      if (!data) return null;
       return data;
     },
     staleTime,

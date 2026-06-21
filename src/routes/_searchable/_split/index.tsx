@@ -1,11 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
+/* legacy route stub removed - migrated to Next App Router */
 
-import { createFileRoute } from '@tanstack/react-router';
-
-export const Route = createFileRoute('/_searchable/_split/')({
-  component: RouteComponent,
-});
-
-function RouteComponent() {
-  return;
-}
+export default null;
