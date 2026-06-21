@@ -1,7 +1,7 @@
 "use client";
 
 import React, { PropsWithChildren } from 'react';
-import { useSelectedLayoutSegment } from 'next/navigation';
+import { useSelectedLayoutSegment, notFound } from 'next/navigation';
 import { SearchPageRoute } from '../../../src/components/SearchPageRoute/SearchPageRoute';
 
 interface PageLayoutProps {
@@ -13,8 +13,12 @@ interface PageLayoutProps {
 export default function PageLayout({ children, params }: PropsWithChildren<PageLayoutProps>) {
   const resolvedParams = React.use(params);
   const rawPage = Number(resolvedParams.page);
-  const pageNumber = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1;
 
+  if (!Number.isFinite(rawPage) || rawPage < 1) {
+    notFound();
+  }
+
+  const pageNumber = rawPage
   const selectedSegment = useSelectedLayoutSegment();
   const hasItemSelected = selectedSegment !== null;
 

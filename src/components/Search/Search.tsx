@@ -14,7 +14,7 @@ export function Search() {
   useMovieSearch({
     search: searchQuery,
     page: 0,
-    enabled: Boolean(searchQuery),
+    enabled: true,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

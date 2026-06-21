@@ -19,7 +19,7 @@ export function ItemCard({ movieId, title, details }: CardProps) {
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const pageNumber = Math.max(1, currentPage + 1);
-    router.push(`/${pageNumber}/${movieId}`);
+    router.push(`/search/${pageNumber}/${movieId}`);
   };
 
   return (
