@@ -1,6 +1,7 @@
+"use client"
+
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-// removed dependency on router's notFound sentinel
 import { fetchItemData } from '../utils/searchEngine';
 import { useDetailsStore } from '../store/useDetailsStore';
 import { movieKeys } from './queryKeys';

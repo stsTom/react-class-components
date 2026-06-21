@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { useSearchStore, useMovieSearch } from '../../store';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';

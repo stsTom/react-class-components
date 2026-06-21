@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ItemCard } from '../ItemCard/ItemCard';
 import { useMovieSearch, useSearchStore } from '../../store';
+import { Pagination } from '../Pagination/Pagination';
 
 export function ItemsContainer() {
   const items = useSearchStore((s) => s.items);
@@ -13,13 +13,7 @@ export function ItemsContainer() {
   const currentPage = useSearchStore((s) => s.currentPage);
 
   const { getLastRequest } = useLocalStorage();
-  const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    // Read localStorage only after mount to keep SSR and client render consistent.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSearch(getLastRequest());
-  }, [getLastRequest]);
+  const [search] = useState(() => getLastRequest());
 
   const { isFetching } = useMovieSearch({
     search,
@@ -40,20 +34,7 @@ export function ItemsContainer() {
             />
           ))}
 
-          <div role="group">
-            {Array.from({ length: pagesCount }, (_, i: number) => {
-              const pageNumber = i + 1;
-              return i === currentPage ? (
-                <button key={i} type="button" disabled>
-                  {pageNumber}
-                </button>
-              ) : (
-                <Link key={i} href={`/${pageNumber}`}>
-                  <button type="button">{pageNumber}</button>
-                </Link>
-              );
-            })}
-          </div>
+          <Pagination currentPage={currentPage} pagesCount={pagesCount}/>
         </>
       )}
 

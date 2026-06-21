@@ -10,7 +10,7 @@ export default function NotFound() {
 
         <h3>Page Not Found</h3>
         <p>
-          Oops! The page you are looking for doesn&apos;t exist, has been moved,
+          Oops! The page you are looking for doesn't exist, has been moved,
           or is temporarily unavailable.
         </p>
 

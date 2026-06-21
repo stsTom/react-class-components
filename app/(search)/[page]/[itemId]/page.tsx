@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useDetailsStore, useMovieDetails } from '../../../src/store';
+import { useDetailsStore, useMovieDetails } from '../../../../src/store';
 
 interface ItemDetailsProps {
   params: Promise<{
