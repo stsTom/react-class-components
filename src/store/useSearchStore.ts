@@ -6,9 +6,11 @@ export interface SearchSlice {
   pagesCount: number;
   currentPage: number;
   errorMessage: string | null;
+  isFetching: boolean;
   setResults: (items: Item[], pagesCount: number) => void;
   setPage: (page: number) => void;
   setError: (message: string) => void;
+  setFetching: (isFetching: boolean) => void;
   reset: () => void;
 }
 
@@ -17,6 +19,7 @@ const initialState = {
   pagesCount: 0,
   currentPage: 0,
   errorMessage: null as string | null,
+  isFetching: false,
 };
 
 export const useSearchStore = create<SearchSlice>((set) => ({
@@ -28,6 +31,8 @@ export const useSearchStore = create<SearchSlice>((set) => ({
   setPage: (page) => set({ currentPage: page }),
 
   setError: (message) => set({ errorMessage: message }),
+
+  setFetching: (isFetching) => set({ isFetching }),
 
   reset: () => set(initialState),
 }));

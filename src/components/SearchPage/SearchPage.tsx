@@ -3,10 +3,10 @@
 import { ItemsContainer } from '../ItemsContainer/ItemsContainer';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 
-export function SearchPage() {
+export function SearchPage({ pageNumber }: { pageNumber: number }) {
   return (
     <div>
-      <ItemsContainer />
+      <ItemsContainer pageNumber={ pageNumber }/>
       <footer>
         <ErrorTrigger />
       </footer>

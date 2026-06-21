@@ -16,7 +16,7 @@ export async function fetchData(searchRequest: string, pageNumber: number) {
     title: searchRequest ?? '',
   });
   const paginationParams = new URLSearchParams({
-    pageNumber: pageNumber.toString(),
+    pageNumber: (pageNumber - 1).toString(),
     pageSize: '7',
   });
   const fullUrl = `${apiUrl}/v1/rest/movie/search?${paginationParams.toString()}`;

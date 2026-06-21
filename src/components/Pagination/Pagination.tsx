@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const SIBLINGS = 1;
 
@@ -20,11 +23,13 @@ function getPageRange(current: number, total: number): (number | '...')[] {
 }
 
 interface PaginationProps {
-  currentPage: number;
   pagesCount: number;
 }
 
-export function Pagination({ currentPage, pagesCount }: PaginationProps) {
+export function Pagination({ pagesCount }: PaginationProps) {
+  const { page } = useParams();
+  const currentPage = Number(page);
+
   const pages = getPageRange(currentPage, pagesCount);
 
   return (
@@ -35,10 +40,12 @@ export function Pagination({ currentPage, pagesCount }: PaginationProps) {
         ) : (
           <Link
             key={page}
-            href={`/${page}`}
+            href={`/search/${page}`}
             aria-current={page === currentPage ? 'page' : undefined}
-            aria-disabled={page === currentPage + 1}
-            onClick={page === currentPage + 1 ? (e) => e.preventDefault() : undefined}
+            aria-disabled={page === currentPage}
+            onClick={(e) => {
+              if (page === currentPage) e.preventDefault();
+            }}
           >
             {page}
           </Link>

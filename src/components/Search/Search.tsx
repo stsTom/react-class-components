@@ -1,32 +1,37 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import { useSearchStore, useMovieSearch } from '../../store';
+import React, { memo, useState } from 'react';
+import { useSearchStore } from '../../store';
+import { useMovieSearch } from '../../store';
 import { ErrorTrigger } from '../TestErrorButton/TestErrorButton';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useParams, useRouter } from 'next/navigation';
 
-export function Search() {
+const Search = memo(function Search() {
   const { getLastRequest, setLastRequest } = useLocalStorage();
   const setPage = useSearchStore((s) => s.setPage);
-
   const [searchQuery, setSearchQuery] = useState(() => getLastRequest() || '');
+
+  const { page } = useParams();
+  const pageNumber = Number(page) || 1;
+
+  const router = useRouter()
 
   useMovieSearch({
     search: searchQuery,
-    page: 0,
-    enabled: true,
+    page: pageNumber,
+    enabled: searchQuery.trim().length > 0,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const trimmedQuery = searchQuery.trim();
-
     if (trimmedQuery !== '') {
       setLastRequest(trimmedQuery);
-      setPage(0);
+      setPage(pageNumber);
       setSearchQuery(trimmedQuery);
     }
+    router.push('/search/1')
   };
 
   return (
@@ -42,4 +47,6 @@ export function Search() {
       <ErrorTrigger />
     </form>
   );
-}
+})
+
+export default Search

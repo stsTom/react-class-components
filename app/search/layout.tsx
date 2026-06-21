@@ -2,7 +2,7 @@
 
 import { PropsWithChildren } from 'react';
 import { NavMenu } from '../../src/components/NavMenu/NavMenu';
-import { Search } from '../../src/components/Search/Search';
+import Search from '../../src/components/Search/Search';
 import { useSelectionStore } from '../../src/store/useSelectionStore';
 import { SelectionFlyout } from '../../src/components/SelectionFlyout/SelectionFlyout'
 
