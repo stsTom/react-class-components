@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ItemCard } from '../ItemCard/ItemCard';
 import { useMovieSearch, useSearchStore } from '../../store';
@@ -10,7 +11,6 @@ export function ItemsContainer() {
   const pagesCount = useSearchStore((s) => s.pagesCount);
   const errorMessage = useSearchStore((s) => s.errorMessage);
   const currentPage = useSearchStore((s) => s.currentPage);
-  const setPage = useSearchStore((s) => s.setPage);
 
   const { getLastRequest } = useLocalStorage();
   const [search, setSearch] = useState('');
@@ -41,15 +41,18 @@ export function ItemsContainer() {
           ))}
 
           <div role="group">
-            {Array.from({ length: pagesCount }, (_, i: number) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                disabled={i === currentPage}
-              >
-                {i + 1}
-              </button>
-            ))}
+            {Array.from({ length: pagesCount }, (_, i: number) => {
+              const pageNumber = i + 1;
+              return i === currentPage ? (
+                <button key={i} type="button" disabled>
+                  {pageNumber}
+                </button>
+              ) : (
+                <Link key={i} href={`/${pageNumber}`}>
+                  <button type="button">{pageNumber}</button>
+                </Link>
+              );
+            })}
           </div>
         </>
       )}

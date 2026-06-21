@@ -1,5 +1,5 @@
-import { SearchPage } from '../src/components/SearchPage/SearchPage';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <SearchPage />;
+  redirect('/1');
 }

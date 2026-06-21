@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSelectionStore } from '../../store/useSelectionStore';
+import { useSearchStore } from '../../store/useSearchStore';
 
 interface CardProps {
   movieId: string;
@@ -13,10 +14,12 @@ export function ItemCard({ movieId, title, details }: CardProps) {
   const router = useRouter();
   const manageSelection = useSelectionStore((s) => s.manageSelection);
   const isChecked = useSelectionStore((s) => s.selectedItems).includes(movieId);
+  const currentPage = useSearchStore((s) => s.currentPage);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/_searchable/_split/${movieId}`);
+    const pageNumber = Math.max(1, currentPage + 1);
+    router.push(`/${pageNumber}/${movieId}`);
   };
 
   return (
