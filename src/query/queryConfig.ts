@@ -1,5 +1,5 @@
 function parseEnvInt(key: string, fallback: number): number {
-  const raw = import.meta.env[key];
+  const raw = process.env[`NEXT_PUBLIC_${key.replace(/^VITE_/, '')}`] ?? process.env[key];
   if (raw === undefined || raw === '') return fallback;
   const parsed = parseInt(raw, 10);
   if (Number.isNaN(parsed) || parsed < 0) {

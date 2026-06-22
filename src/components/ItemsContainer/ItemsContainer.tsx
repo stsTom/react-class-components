@@ -1,22 +1,33 @@
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { ItemCard } from '../ItemCard/ItemCard';
-import { useMovieSearch, useSearchStore } from '../../store';
+"use client";
 
-export function ItemsContainer() {
+import { useSyncExternalStore, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchStore } from '../../store';
+import { ItemCard } from '../ItemCard/ItemCard';
+import { Pagination } from '../Pagination/Pagination';
+
+function subscribe() { return () => {}; }
+
+interface ItemsContainerProps {
+  pageNumber: number;
+}
+
+export function ItemsContainer({ pageNumber }: ItemsContainerProps) {
   const items = useSearchStore((s) => s.items);
   const pagesCount = useSearchStore((s) => s.pagesCount);
   const errorMessage = useSearchStore((s) => s.errorMessage);
-  const currentPage = useSearchStore((s) => s.currentPage);
-  const setPage = useSearchStore((s) => s.setPage);
+  const isFetching = useSearchStore((s) => s.isFetching);
 
-  const { getLastRequest } = useLocalStorage();
-  const search = getLastRequest();
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
+  const router = useRouter();
 
-  const { isFetching } = useMovieSearch({
-    search,
-    page: currentPage,
-    enabled: Boolean(search),
-  });
+  useEffect(() => {
+    if (!isFetching && pagesCount > 0 && pageNumber > pagesCount) {
+      router.replace(`/search/${pagesCount}`);
+    }
+  }, [isFetching, pagesCount, pageNumber, router]);
+
+  if (!mounted) return null;
 
   return (
     <main aria-busy={isFetching}>
@@ -30,18 +41,7 @@ export function ItemsContainer() {
               details={item.details}
             />
           ))}
-
-          <div role="group">
-            {Array.from({ length: pagesCount }, (_, i: number) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                disabled={i === currentPage}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
+          <Pagination pagesCount={pagesCount} />
         </>
       )}
 

@@ -1,3 +1,5 @@
+"use client"
+
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { fetchData } from '../utils/searchEngine';
@@ -21,7 +23,10 @@ export function useMovieSearch({
   const setResults = useSearchStore((s) => s.setResults);
   const setPage = useSearchStore((s) => s.setPage);
   const setError = useSearchStore((s) => s.setError);
+  const setFetching = useSearchStore((s) => s.setFetching);
 
+  console.log('fetching page:', page, 'search:', search);
+  
   const query = useQuery({
     queryKey: movieKeys.movieInfo(search, page),
     queryFn: () => fetchData(search, page),
@@ -30,6 +35,10 @@ export function useMovieSearch({
     enabled,
   });
 
+  useEffect(() => {
+    setFetching(query.isFetching);
+  }, [query.isFetching, setFetching]);
+  
   useEffect(() => {
     if (query.data) {
       setResults(query.data.movies ?? [], query.data.pagesCount ?? 0);
