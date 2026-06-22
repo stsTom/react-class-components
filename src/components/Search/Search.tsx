@@ -20,7 +20,6 @@ const Search = memo(function Search() {
   useMovieSearch({
     search: searchQuery,
     page: pageNumber,
-    enabled: searchQuery.trim().length > 0,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
