@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { fetchItemData } from '../utils/searchEngine';
 
 interface SelectionSlice {
   selectedItems: Array<string>;
@@ -26,19 +25,15 @@ export const useSelectionStore = create<SelectionSlice>((set, get) => ({
   downloadSelection: async () => {
     const { selectedItems } = get();
 
-    const rows: string[] = ['title,director,usReleaseDate'];
+    const response = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedItems }),
+    });
 
-    for (const id of selectedItems) {
-      console.log(id);
-      const movieData = await fetchItemData(id);
-      if (movieData) {
-        rows.push(
-          `"${movieData.movie.title}","${movieData.movie.mainDirector.name}","${movieData.movie.usReleaseDate}"`
-        );
-      }
-    }
+    if (!response.ok) throw new Error('Failed to generate CSV');
 
-    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
 
@@ -46,7 +41,7 @@ export const useSelectionStore = create<SelectionSlice>((set, get) => ({
     a.download = `${selectedItems.length}_items.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  },
+},
 
   clearSelection: () => set({ selectedItems: [] }),
 }));

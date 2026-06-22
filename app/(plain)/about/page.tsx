@@ -1,3 +1,6 @@
+// eslint-disable-next-line react-refresh/only-export-components
+export const dynamic = 'force-static';
+
 export default function AboutPage() {
   return (
     <div className="container" style={{ padding: '2rem 0' }}>

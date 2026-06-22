@@ -25,7 +25,7 @@ export function ItemsContainer({ pageNumber }: ItemsContainerProps) {
     if (!isFetching && pagesCount > 0 && pageNumber > pagesCount) {
       router.replace(`/search/${pagesCount}`);
     }
-  }, [isFetching, pagesCount, pageNumber]);
+  }, [isFetching, pagesCount, pageNumber, router]);
 
   if (!mounted) return null;
 
